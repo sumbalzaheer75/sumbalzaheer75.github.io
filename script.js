@@ -1,101 +1,35 @@
-/* =========================
-   MOBILE MENU
-========================= */
+const menuToggle = document.querySelector(".menu-toggle");
+const navLinks = document.querySelector(".nav-links");
+const links = document.querySelectorAll(".nav-links a");
 
-const menuToggle = document.getElementById("menuToggle");
-const navMenu = document.getElementById("navMenu");
-
-menuToggle.addEventListener("click", () => {
-    navMenu.classList.toggle("open");
+menuToggle?.addEventListener("click", () => {
+  navLinks.classList.toggle("open");
 });
 
-
-/* =========================
-   CLOSE MOBILE MENU
-========================= */
-
-const navLinks = document.querySelectorAll(".nav-link");
-
-navLinks.forEach((link) => {
-
-    link.addEventListener("click", () => {
-        navMenu.classList.remove("open");
-    });
-
+links.forEach(link => {
+  link.addEventListener("click", () => navLinks.classList.remove("open"));
 });
 
+const sections = document.querySelectorAll("section[id]");
 
-/* =========================
-   ACTIVE NAVIGATION
-========================= */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add("visible");
+  });
+}, { threshold: 0.12 });
 
-const sections = document.querySelectorAll("section");
+document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
 
-window.addEventListener("scroll", () => {
-
-    let currentSection = "";
-
-    sections.forEach((section) => {
-
-        const sectionTop = section.offsetTop - 120;
-
-        if (window.scrollY >= sectionTop) {
-            currentSection = section.getAttribute("id");
-        }
-
-    });
-
-    navLinks.forEach((link) => {
-
-        link.classList.remove("active");
-
-        if (link.getAttribute("href") === `#${currentSection}`) {
-            link.classList.add("active");
-        }
-
-    });
-
-});
-
-
-/* =========================
-   SCROLL REVEAL ANIMATION
-========================= */
-
-const animatedElements = document.querySelectorAll(
-    ".section, .hero-content, .hero-card"
-);
-
-const observer = new IntersectionObserver(
-    (entries) => {
-
-        entries.forEach((entry) => {
-
-            if (entry.isIntersecting) {
-
-                entry.target.classList.add("visible");
-
-                observer.unobserve(entry.target);
-
-            }
-
-        });
-
-    },
-    {
-        threshold: 0.12
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      links.forEach(link => link.classList.remove("active"));
+      const active = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
+      active?.classList.add("active");
     }
-);
+  });
+}, { threshold: 0.45 });
 
+sections.forEach(section => navObserver.observe(section));
 
-animatedElements.forEach((element) => {
-    observer.observe(element);
-});
-
-
-/* =========================
-   CURRENT YEAR
-========================= */
-
-document.getElementById("currentYear").textContent =
-    new Date().getFullYear();
+document.getElementById("year").textContent = new Date().getFullYear();
